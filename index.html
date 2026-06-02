@@ -1,0 +1,1631 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>中国足迹地图</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7f4;
+        --panel: #ffffff;
+        --ink: #1f2a2b;
+        --muted: #667473;
+        --line: #d9e1dc;
+        --visited: #178765;
+        --visited-2: #65b78e;
+        --plain: #dce6e0;
+        --plain-2: #eef4f1;
+        --accent: #c65b3d;
+        --gold: #d29a2e;
+        --shadow: 0 18px 45px rgba(38, 57, 49, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Microsoft YaHei", sans-serif;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        cursor: pointer;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr) 360px;
+        min-height: 100vh;
+      }
+
+      .sidebar,
+      .detail {
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(10px);
+        border-color: var(--line);
+        border-style: solid;
+        overflow: auto;
+      }
+
+      .sidebar {
+        border-width: 0 1px 0 0;
+        padding: 22px;
+      }
+
+      .detail {
+        border-width: 0 0 0 1px;
+        padding: 22px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: 0;
+      }
+
+      .brand small {
+        color: var(--muted);
+      }
+
+      .account-box,
+      .stat-grid,
+      .search-box,
+      .city-list,
+      .photo-tools,
+      .empty-detail {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 8px;
+      }
+
+      .account-box,
+      .search-box,
+      .city-list,
+      .photo-tools,
+      .empty-detail {
+        padding: 14px;
+      }
+
+      .account-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+      }
+
+      select,
+      input[type="text"],
+      input[type="search"],
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcfa;
+        color: var(--ink);
+        padding: 10px 11px;
+        outline: none;
+      }
+
+      textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+
+      .icon-btn,
+      .primary,
+      .quiet,
+      .danger,
+      .file-label {
+        min-height: 38px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 11px;
+        white-space: nowrap;
+      }
+
+      .icon-btn {
+        width: 38px;
+        padding: 0;
+        background: #eef4f1;
+        color: var(--ink);
+      }
+
+      .primary {
+        background: var(--visited);
+        color: #fff;
+      }
+
+      .quiet,
+      .file-label {
+        background: #edf2ef;
+        color: var(--ink);
+      }
+
+      .danger {
+        background: #f5e8e3;
+        color: #963f2a;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        margin: 16px 0;
+        overflow: hidden;
+      }
+
+      .stat {
+        padding: 14px;
+        border-right: 1px solid var(--line);
+      }
+
+      .stat:last-child {
+        border-right: 0;
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 25px;
+      }
+
+      .stat span,
+      .section-title,
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .section-title {
+        margin: 18px 0 8px;
+        font-weight: 700;
+      }
+
+      .search-results {
+        display: grid;
+        gap: 7px;
+        margin-top: 10px;
+        max-height: 260px;
+        overflow: auto;
+      }
+
+      .city-pill,
+      .city-row {
+        width: 100%;
+        text-align: left;
+        border-radius: 8px;
+        background: #f4f7f5;
+        color: var(--ink);
+      }
+
+      .city-pill {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        padding: 9px 10px;
+      }
+
+      .city-pill strong,
+      .city-row strong {
+        overflow-wrap: anywhere;
+      }
+
+      .city-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .city-row + .city-row {
+        margin-top: 8px;
+      }
+
+      .city-row.active,
+      .city-pill.active {
+        outline: 2px solid rgba(23, 135, 101, 0.24);
+        background: #e8f3ee;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        height: 24px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: #e2eee8;
+        color: var(--visited);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .map-shell {
+        position: relative;
+        min-width: 0;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        padding: 20px 22px;
+      }
+
+      .map-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .map-top h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .map-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .map-wrap {
+        min-height: 620px;
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(226, 237, 229, 0.82)),
+          #edf3ef;
+        box-shadow: var(--shadow);
+      }
+
+      svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .region-shape {
+        fill: var(--plain);
+        stroke: #ffffff;
+        stroke-width: 0.75;
+        transition:
+          fill 0.16s ease,
+          filter 0.16s ease;
+        cursor: pointer;
+      }
+
+      .region-shape.has-visited {
+        fill: #c9ded3;
+      }
+
+      .region-shape.visited {
+        fill: var(--visited-2);
+      }
+
+      .region-shape.selected {
+        fill: var(--accent);
+        filter: drop-shadow(0 4px 8px rgba(121, 63, 40, 0.28));
+      }
+
+      .region-shape:hover {
+        fill: var(--gold);
+      }
+
+      .map-label {
+        pointer-events: none;
+        fill: #263633;
+        font-size: 12px;
+        paint-order: stroke;
+        stroke: #fff;
+        stroke-width: 3px;
+        stroke-linejoin: round;
+      }
+
+      .province-label {
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .city-label {
+        font-size: 11px;
+      }
+
+      .visited-dot {
+        fill: var(--visited);
+        stroke: #fff;
+        stroke-width: 2;
+        filter: drop-shadow(0 2px 5px rgba(23, 135, 101, 0.3));
+        pointer-events: none;
+      }
+
+      .legend {
+        position: absolute;
+        left: 16px;
+        bottom: 16px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .key {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        background: var(--plain);
+      }
+
+      .swatch.visited {
+        background: var(--visited-2);
+      }
+
+      .swatch.dot {
+        border-radius: 999px;
+        background: var(--visited);
+      }
+
+      .swatch.selected {
+        background: var(--accent);
+      }
+
+      .detail-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .detail h2 {
+        margin: 0;
+        font-size: 25px;
+      }
+
+      .cover {
+        margin: 14px 0;
+        aspect-ratio: 16 / 10;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #eaf0ed;
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+      }
+
+      .cover img,
+      .photo img,
+      .lightbox img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .photo {
+        position: relative;
+        aspect-ratio: 1;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #edf2ef;
+      }
+
+      .photo-actions {
+        position: absolute;
+        left: 6px;
+        right: 6px;
+        bottom: 6px;
+        display: flex;
+        gap: 6px;
+      }
+
+      .photo-actions button {
+        flex: 1;
+        min-height: 30px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--ink);
+        font-size: 12px;
+      }
+
+      .cover-mark {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        border-radius: 999px;
+        background: rgba(23, 135, 101, 0.92);
+        color: #fff;
+        padding: 4px 7px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .empty-detail {
+        min-height: 240px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        transform: translateX(-50%);
+        background: #203331;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        z-index: 20;
+      }
+
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        background: rgba(21, 29, 27, 0.78);
+        display: grid;
+        place-items: center;
+        padding: 28px;
+      }
+
+      .lightbox button {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+      }
+
+      .lightbox figure {
+        margin: 0;
+        max-width: min(980px, 92vw);
+        max-height: 86vh;
+      }
+
+      .lightbox img {
+        max-height: 86vh;
+        border-radius: 8px;
+        object-fit: contain;
+        background: #fff;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      @media (max-width: 1180px) {
+        .app {
+          grid-template-columns: 290px minmax(0, 1fr);
+        }
+
+        .detail {
+          grid-column: 1 / -1;
+          border-width: 1px 0 0;
+          max-height: none;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .app {
+          display: block;
+        }
+
+        .sidebar,
+        .detail,
+        .map-shell {
+          border-width: 0;
+          padding: 16px;
+        }
+
+        .map-wrap {
+          min-height: 440px;
+        }
+
+        .map-top {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .map-actions {
+          justify-content: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div>
+            <h1>中国足迹地图</h1>
+            <small>本地账号 · 本地相册 · 省市下钻</small>
+          </div>
+        </div>
+
+        <section class="account-box">
+          <div class="account-row">
+            <select id="accountSelect" aria-label="切换账号"></select>
+            <button class="icon-btn" id="newAccountBtn" title="新建账号" aria-label="新建账号">＋</button>
+          </div>
+          <div class="toolbar">
+            <button class="quiet" id="exportBtn">导出账号</button>
+            <label class="file-label" for="importFile">导入账号</label>
+            <input id="importFile" type="file" accept="application/json" />
+            <button class="danger" id="deleteAccountBtn">删除账号</button>
+          </div>
+        </section>
+
+        <section class="stat-grid">
+          <div class="stat"><strong id="visitedCount">0</strong><span>已去城市</span></div>
+          <div class="stat"><strong id="provinceCount">0</strong><span>点亮省份</span></div>
+        </section>
+
+        <section class="search-box">
+          <input id="searchInput" type="search" placeholder="搜索城市或省份" />
+          <div class="search-results" id="searchResults"></div>
+        </section>
+
+        <div class="section-title">已去城市</div>
+        <section class="city-list" id="visitedList"></section>
+      </aside>
+
+      <section class="map-shell">
+        <div class="map-top">
+          <div>
+            <h2 id="mapTitle">中国省级足迹总览</h2>
+            <div class="muted" id="dataNote">正在加载地图数据</div>
+          </div>
+          <div class="map-actions">
+            <button class="quiet" id="backChinaBtn" hidden>返回中国地图</button>
+            <button class="quiet" id="resetViewBtn">重置选择</button>
+          </div>
+        </div>
+        <div class="map-wrap">
+          <svg id="mapSvg" viewBox="0 0 900 640" role="img" aria-label="中国足迹地图"></svg>
+          <div class="legend">
+            <span class="key"><i class="swatch"></i>未点亮</span>
+            <span class="key"><i class="swatch visited"></i>省内已去</span>
+            <span class="key"><i class="swatch dot"></i>总图城市</span>
+            <span class="key"><i class="swatch selected"></i>当前</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="detail" id="detailPanel"></aside>
+    </main>
+
+    <div id="toast" class="toast" hidden></div>
+    <div id="lightbox" class="lightbox" hidden></div>
+
+    <script id="embeddedMapData" type="application/json">
+      {
+        "type": "FeatureCollection",
+        "features": [
+          { "type": "Feature", "properties": { "name": "北京市", "adcode": "110100", "province": "北京市" }, "geometry": { "type": "Polygon", "coordinates": [[[116.05, 40.32], [116.78, 40.31], [116.92, 39.78], [116.25, 39.55], [115.82, 39.84], [116.05, 40.32]]] } },
+          { "type": "Feature", "properties": { "name": "天津市", "adcode": "120100", "province": "天津市" }, "geometry": { "type": "Polygon", "coordinates": [[[117.03, 39.42], [117.78, 39.36], [117.91, 38.85], [117.25, 38.55], [116.9, 38.9], [117.03, 39.42]]] } },
+          { "type": "Feature", "properties": { "name": "石家庄市", "adcode": "130100", "province": "河北省" }, "geometry": { "type": "Polygon", "coordinates": [[[113.7, 38.35], [114.85, 38.42], [115.18, 37.72], [114.35, 37.35], [113.58, 37.72], [113.7, 38.35]]] } },
+          { "type": "Feature", "properties": { "name": "太原市", "adcode": "140100", "province": "山西省" }, "geometry": { "type": "Polygon", "coordinates": [[[111.58, 38.28], [112.75, 38.25], [113.03, 37.55], [112.18, 37.18], [111.42, 37.58], [111.58, 38.28]]] } },
+          { "type": "Feature", "properties": { "name": "呼和浩特市", "adcode": "150100", "province": "内蒙古自治区" }, "geometry": { "type": "Polygon", "coordinates": [[[110.45, 41.18], [112.2, 41.25], [112.42, 40.55], [111.15, 40.18], [110.28, 40.62], [110.45, 41.18]]] } },
+          { "type": "Feature", "properties": { "name": "沈阳市", "adcode": "210100", "province": "辽宁省" }, "geometry": { "type": "Polygon", "coordinates": [[[122.72, 42.08], [123.85, 42.15], [124.12, 41.55], [123.22, 41.18], [122.55, 41.58], [122.72, 42.08]]] } },
+          { "type": "Feature", "properties": { "name": "长春市", "adcode": "220100", "province": "吉林省" }, "geometry": { "type": "Polygon", "coordinates": [[[124.78, 44.05], [126.35, 44.18], [126.58, 43.42], [125.35, 43.05], [124.52, 43.48], [124.78, 44.05]]] } },
+          { "type": "Feature", "properties": { "name": "哈尔滨市", "adcode": "230100", "province": "黑龙江省" }, "geometry": { "type": "Polygon", "coordinates": [[[125.52, 46.15], [127.25, 46.25], [127.72, 45.32], [126.42, 44.82], [125.18, 45.32], [125.52, 46.15]]] } },
+          { "type": "Feature", "properties": { "name": "上海市", "adcode": "310100", "province": "上海市" }, "geometry": { "type": "Polygon", "coordinates": [[[120.92, 31.52], [121.88, 31.48], [122.02, 30.92], [121.28, 30.65], [120.78, 30.98], [120.92, 31.52]]] } },
+          { "type": "Feature", "properties": { "name": "南京市", "adcode": "320100", "province": "江苏省" }, "geometry": { "type": "Polygon", "coordinates": [[[118.18, 32.38], [119.15, 32.32], [119.35, 31.72], [118.65, 31.35], [117.92, 31.72], [118.18, 32.38]]] } },
+          { "type": "Feature", "properties": { "name": "杭州市", "adcode": "330100", "province": "浙江省" }, "geometry": { "type": "Polygon", "coordinates": [[[119.45, 30.62], [120.65, 30.55], [120.92, 29.82], [119.92, 29.42], [119.18, 29.92], [119.45, 30.62]]] } },
+          { "type": "Feature", "properties": { "name": "合肥市", "adcode": "340100", "province": "安徽省" }, "geometry": { "type": "Polygon", "coordinates": [[[116.95, 32.12], [117.95, 32.05], [118.18, 31.42], [117.32, 31.02], [116.68, 31.48], [116.95, 32.12]]] } },
+          { "type": "Feature", "properties": { "name": "福州市", "adcode": "350100", "province": "福建省" }, "geometry": { "type": "Polygon", "coordinates": [[[118.72, 26.35], [119.92, 26.28], [120.12, 25.55], [119.22, 25.12], [118.45, 25.58], [118.72, 26.35]]] } },
+          { "type": "Feature", "properties": { "name": "南昌市", "adcode": "360100", "province": "江西省" }, "geometry": { "type": "Polygon", "coordinates": [[[115.25, 28.98], [116.25, 28.95], [116.52, 28.25], [115.65, 27.9], [114.98, 28.32], [115.25, 28.98]]] } },
+          { "type": "Feature", "properties": { "name": "济南市", "adcode": "370100", "province": "山东省" }, "geometry": { "type": "Polygon", "coordinates": [[[116.42, 37.05], [117.55, 37.02], [117.82, 36.38], [116.9, 36.02], [116.18, 36.42], [116.42, 37.05]]] } },
+          { "type": "Feature", "properties": { "name": "郑州市", "adcode": "410100", "province": "河南省" }, "geometry": { "type": "Polygon", "coordinates": [[[113.05, 34.98], [114.18, 34.95], [114.4, 34.28], [113.48, 33.92], [112.85, 34.32], [113.05, 34.98]]] } },
+          { "type": "Feature", "properties": { "name": "武汉市", "adcode": "420100", "province": "湖北省" }, "geometry": { "type": "Polygon", "coordinates": [[[113.65, 30.92], [114.75, 30.88], [115.05, 30.18], [114.12, 29.8], [113.42, 30.18], [113.65, 30.92]]] } },
+          { "type": "Feature", "properties": { "name": "长沙市", "adcode": "430100", "province": "湖南省" }, "geometry": { "type": "Polygon", "coordinates": [[[112.38, 28.55], [113.38, 28.52], [113.68, 27.82], [112.78, 27.42], [112.08, 27.88], [112.38, 28.55]]] } },
+          { "type": "Feature", "properties": { "name": "广州市", "adcode": "440100", "province": "广东省" }, "geometry": { "type": "Polygon", "coordinates": [[[112.82, 23.48], [113.72, 23.45], [114.02, 22.88], [113.25, 22.52], [112.55, 22.92], [112.82, 23.48]]] } },
+          { "type": "Feature", "properties": { "name": "深圳市", "adcode": "440300", "province": "广东省" }, "geometry": { "type": "Polygon", "coordinates": [[[113.72, 22.85], [114.58, 22.82], [114.72, 22.42], [114.05, 22.18], [113.62, 22.38], [113.72, 22.85]]] } },
+          { "type": "Feature", "properties": { "name": "南宁市", "adcode": "450100", "province": "广西壮族自治区" }, "geometry": { "type": "Polygon", "coordinates": [[[107.92, 23.18], [108.92, 23.12], [109.22, 22.42], [108.35, 22.05], [107.68, 22.52], [107.92, 23.18]]] } },
+          { "type": "Feature", "properties": { "name": "海口市", "adcode": "460100", "province": "海南省" }, "geometry": { "type": "Polygon", "coordinates": [[[110.02, 20.18], [110.62, 20.14], [110.72, 19.78], [110.18, 19.58], [109.88, 19.82], [110.02, 20.18]]] } },
+          { "type": "Feature", "properties": { "name": "重庆市", "adcode": "500100", "province": "重庆市" }, "geometry": { "type": "Polygon", "coordinates": [[[106.05, 30.18], [107.35, 30.08], [107.72, 29.22], [106.65, 28.72], [105.72, 29.25], [106.05, 30.18]]] } },
+          { "type": "Feature", "properties": { "name": "成都市", "adcode": "510100", "province": "四川省" }, "geometry": { "type": "Polygon", "coordinates": [[[103.42, 31.02], [104.75, 30.98], [105.02, 30.12], [104.05, 29.62], [103.12, 30.15], [103.42, 31.02]]] } },
+          { "type": "Feature", "properties": { "name": "贵阳市", "adcode": "520100", "province": "贵州省" }, "geometry": { "type": "Polygon", "coordinates": [[[106.22, 26.92], [107.12, 26.9], [107.35, 26.18], [106.55, 25.82], [105.98, 26.2], [106.22, 26.92]]] } },
+          { "type": "Feature", "properties": { "name": "昆明市", "adcode": "530100", "province": "云南省" }, "geometry": { "type": "Polygon", "coordinates": [[[102.15, 25.38], [103.28, 25.32], [103.55, 24.55], [102.62, 24.12], [101.88, 24.58], [102.15, 25.38]]] } },
+          { "type": "Feature", "properties": { "name": "拉萨市", "adcode": "540100", "province": "西藏自治区" }, "geometry": { "type": "Polygon", "coordinates": [[[90.72, 30.12], [92.18, 30.05], [92.48, 29.28], [91.22, 28.85], [90.45, 29.35], [90.72, 30.12]]] } },
+          { "type": "Feature", "properties": { "name": "西安市", "adcode": "610100", "province": "陕西省" }, "geometry": { "type": "Polygon", "coordinates": [[[108.35, 34.62], [109.45, 34.55], [109.72, 33.92], [108.82, 33.52], [108.08, 33.92], [108.35, 34.62]]] } },
+          { "type": "Feature", "properties": { "name": "兰州市", "adcode": "620100", "province": "甘肃省" }, "geometry": { "type": "Polygon", "coordinates": [[[102.95, 36.38], [104.18, 36.32], [104.45, 35.72], [103.55, 35.32], [102.75, 35.78], [102.95, 36.38]]] } },
+          { "type": "Feature", "properties": { "name": "西宁市", "adcode": "630100", "province": "青海省" }, "geometry": { "type": "Polygon", "coordinates": [[[100.92, 36.92], [102.05, 36.88], [102.32, 36.22], [101.42, 35.82], [100.68, 36.22], [100.92, 36.92]]] } },
+          { "type": "Feature", "properties": { "name": "银川市", "adcode": "640100", "province": "宁夏回族自治区" }, "geometry": { "type": "Polygon", "coordinates": [[[105.65, 38.82], [106.65, 38.78], [106.92, 38.12], [106.08, 37.78], [105.42, 38.18], [105.65, 38.82]]] } },
+          { "type": "Feature", "properties": { "name": "乌鲁木齐市", "adcode": "650100", "province": "新疆维吾尔自治区" }, "geometry": { "type": "Polygon", "coordinates": [[[86.92, 44.12], [88.25, 44.08], [88.58, 43.25], [87.42, 42.82], [86.62, 43.28], [86.92, 44.12]]] } },
+          { "type": "Feature", "properties": { "name": "台北市", "adcode": "710100", "province": "台湾省" }, "geometry": { "type": "Polygon", "coordinates": [[[121.18, 25.32], [121.78, 25.28], [121.92, 24.92], [121.35, 24.68], [121.05, 24.92], [121.18, 25.32]]] } },
+          { "type": "Feature", "properties": { "name": "香港特别行政区", "adcode": "810000", "province": "香港特别行政区" }, "geometry": { "type": "Polygon", "coordinates": [[[113.88, 22.48], [114.35, 22.46], [114.42, 22.18], [114.08, 21.98], [113.82, 22.18], [113.88, 22.48]]] } },
+          { "type": "Feature", "properties": { "name": "澳门特别行政区", "adcode": "820000", "province": "澳门特别行政区" }, "geometry": { "type": "Polygon", "coordinates": [[[113.45, 22.28], [113.72, 22.26], [113.75, 22.08], [113.52, 21.96], [113.38, 22.1], [113.45, 22.28]]] } }
+        ]
+      }
+    </script>
+    <script>
+      const DB_NAME = "china-footprint-map-static";
+      const DB_VERSION = 1;
+      const DATAV_BASE = "https://geo.datav.aliyun.com/areas_v3/bound/";
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const VIEW_BOX = { width: 900, height: 640, pad: 26 };
+      const $ = (id) => document.getElementById(id);
+      const uid = (prefix) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
+      const now = () => Date.now();
+
+      const provinceNames = {
+        11: "北京市", 12: "天津市", 13: "河北省", 14: "山西省", 15: "内蒙古自治区",
+        21: "辽宁省", 22: "吉林省", 23: "黑龙江省", 31: "上海市", 32: "江苏省",
+        33: "浙江省", 34: "安徽省", 35: "福建省", 36: "江西省", 37: "山东省",
+        41: "河南省", 42: "湖北省", 43: "湖南省", 44: "广东省", 45: "广西壮族自治区",
+        46: "海南省", 50: "重庆市", 51: "四川省", 52: "贵州省", 53: "云南省",
+        54: "西藏自治区", 61: "陕西省", 62: "甘肃省", 63: "青海省", 64: "宁夏回族自治区",
+        65: "新疆维吾尔自治区", 71: "台湾省", 81: "香港特别行政区", 82: "澳门特别行政区",
+      };
+
+      const provinceLabelOffsets = {
+        11: [0, -8], 12: [10, 7], 31: [10, 4], 32: [8, -4], 33: [8, 6],
+        34: [-6, 2], 35: [8, 9], 44: [0, 11], 81: [16, 0], 82: [-14, 12],
+        71: [12, 0], 46: [0, 10],
+      };
+
+      const state = {
+        db: null,
+        accounts: [],
+        currentAccountId: null,
+        cities: [],
+        citiesByCode: new Map(),
+        citiesByProvince: new Map(),
+        provinces: [],
+        provincesByCode: new Map(),
+        loadedProvinceCodes: new Set(),
+        records: new Map(),
+        selectedCityCode: null,
+        selectedProvinceCode: null,
+        selectedPhotos: [],
+        photoUrls: new Map(),
+        bounds: null,
+        dataMode: "sample",
+      };
+
+      function openDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onupgradeneeded = () => {
+            const db = request.result;
+            if (!db.objectStoreNames.contains("accounts")) {
+              const accounts = db.createObjectStore("accounts", { keyPath: "id" });
+              accounts.createIndex("updatedAt", "updatedAt");
+            }
+            if (!db.objectStoreNames.contains("records")) {
+              const records = db.createObjectStore("records", { keyPath: ["accountId", "cityCode"] });
+              records.createIndex("accountId", "accountId");
+            }
+            if (!db.objectStoreNames.contains("photos")) {
+              const photos = db.createObjectStore("photos", { keyPath: "id" });
+              photos.createIndex("accountId", "accountId");
+              photos.createIndex("city", ["accountId", "cityCode"]);
+            }
+            if (!db.objectStoreNames.contains("settings")) {
+              db.createObjectStore("settings");
+            }
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function tx(storeNames, mode = "readonly") {
+        return state.db.transaction(storeNames, mode);
+      }
+
+      function storeGet(storeName, key) {
+        return new Promise((resolve, reject) => {
+          const request = tx([storeName]).objectStore(storeName).get(key);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function storeGetAll(storeName) {
+        return new Promise((resolve, reject) => {
+          const request = tx([storeName]).objectStore(storeName).getAll();
+          request.onsuccess = () => resolve(request.result || []);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function storePut(storeName, value, key) {
+        return new Promise((resolve, reject) => {
+          const request = tx([storeName], "readwrite").objectStore(storeName).put(value, key);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function storeDelete(storeName, key) {
+        return new Promise((resolve, reject) => {
+          const request = tx([storeName], "readwrite").objectStore(storeName).delete(key);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function indexGetAll(storeName, indexName, key) {
+        return new Promise((resolve, reject) => {
+          const request = tx([storeName]).objectStore(storeName).index(indexName).getAll(key);
+          request.onsuccess = () => resolve(request.result || []);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      async function ensureAccount() {
+        state.accounts = (await storeGetAll("accounts")).sort((a, b) => b.updatedAt - a.updatedAt);
+        let current = await storeGet("settings", "currentAccountId");
+        if (!state.accounts.length) {
+          const account = { id: uid("acct"), nickname: "我的足迹", createdAt: now(), updatedAt: now() };
+          await storePut("accounts", account);
+          await storePut("settings", account.id, "currentAccountId");
+          state.accounts = [account];
+          current = account.id;
+        }
+        if (!state.accounts.some((account) => account.id === current)) {
+          current = state.accounts[0].id;
+          await storePut("settings", current, "currentAccountId");
+        }
+        state.currentAccountId = current;
+      }
+
+      async function loadJsonCandidates(urls) {
+        for (const url of urls) {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) continue;
+            const geo = await response.json();
+            if (geo && Array.isArray(geo.features)) return geo;
+          } catch (error) {
+            // Try the next candidate. Local file usage and offline usage have different fetch limits.
+          }
+        }
+        return null;
+      }
+
+      async function loadMapData() {
+        const localChina = await loadJsonCandidates([
+          "data/china-provinces.json",
+          `${DATAV_BASE}100000_full.json`,
+          "data/china-cities.json",
+        ]);
+        const fallback = JSON.parse($("embeddedMapData").textContent);
+        const chinaGeo = localChina || fallback;
+        const loadedFullChina = Boolean(localChina && (localChina.features || []).some((feature) => isProvinceFeature(feature)));
+        state.dataMode = loadedFullChina ? "full" : "sample";
+        state.provinces = buildProvinces(chinaGeo.features || []);
+        state.provincesByCode = new Map(state.provinces.map((province) => [province.code, province]));
+        if (!loadedFullChina) await loadCitiesFromGeo(chinaGeo, false);
+        state.bounds = computeBounds(state.provinces.map((province) => province.feature));
+        updateDataNote();
+      }
+
+      async function ensureProvinceCities(provinceCode) {
+        const existing = state.citiesByProvince.get(provinceCode) || [];
+        if (state.loadedProvinceCodes.has(provinceCode)) return existing;
+        const geo = await loadJsonCandidates([
+          `data/provinces/${provinceCode}.json`,
+          `${DATAV_BASE}${provinceCode}_full.json`,
+          `${DATAV_BASE}${provinceCode}.json`,
+        ]);
+        if (geo) {
+          await loadCitiesFromGeo(geo, true);
+          state.loadedProvinceCodes.add(provinceCode);
+          state.dataMode = "full";
+          updateDataNote();
+        }
+        return state.citiesByProvince.get(provinceCode) || existing;
+      }
+
+      async function loadCitiesFromGeo(geo, replaceProvince) {
+        const incoming = (geo.features || [])
+          .filter((feature) => feature.geometry && feature.properties)
+          .map(normalizeCityFeature)
+          .filter(Boolean);
+        if (!incoming.length) return;
+
+        if (replaceProvince) {
+          const affected = new Set(incoming.map((city) => city.provinceCode));
+          state.cities = state.cities.filter((city) => !affected.has(city.provinceCode));
+          affected.forEach((code) => state.citiesByProvince.delete(code));
+        }
+
+        const byCode = new Map(state.cities.map((city) => [city.code, city]));
+        incoming.forEach((city) => byCode.set(city.code, city));
+        state.cities = [...byCode.values()].sort((a, b) => a.code.localeCompare(b.code));
+        state.citiesByCode = new Map(state.cities.map((city) => [city.code, city]));
+        state.citiesByProvince = groupBy(state.cities, (city) => city.provinceCode);
+      }
+
+      function buildProvinces(features) {
+        const source = new Map();
+        features.forEach((feature) => {
+          const props = feature.properties || {};
+          const code = provinceCodeFromFeature(feature);
+          const name = props.province || provinceNames[code.slice(0, 2)] || props.name;
+          if (!code || !name || source.has(code)) return;
+          source.set(code, {
+            code,
+            name,
+            shortName: shortRegionName(name),
+            feature: props.level === "province" || isProvinceCode(String(props.adcode || ""))
+              ? feature
+              : makeFeatureEnvelope(feature, code, name),
+          });
+        });
+        return [...source.values()].sort((a, b) => a.code.localeCompare(b.code));
+      }
+
+      function isProvinceFeature(feature) {
+        const props = feature.properties || {};
+        return props.level === "province" || isProvinceCode(String(props.adcode || props.code || ""));
+      }
+
+      function normalizeCityFeature(feature) {
+        const props = feature.properties || {};
+        const code = String(props.adcode || props.code || props.name || "");
+        const provinceCode = provinceCodeFromFeature(feature);
+        const name = props.name || props.fullname || props.city || code;
+        if (!code || !name || !feature.geometry) return null;
+        return {
+          code,
+          name,
+          shortName: shortRegionName(name),
+          province: props.province || provinceNames[provinceCode.slice(0, 2)] || name,
+          provinceCode,
+          feature,
+        };
+      }
+
+      function provinceCodeFromFeature(feature) {
+        const props = feature.properties || {};
+        const adcode = String(props.adcode || props.code || "");
+        if (props.level === "province" || isProvinceCode(adcode)) return adcode.slice(0, 2) + "0000";
+        if (props.parent && props.parent.adcode) return String(props.parent.adcode).slice(0, 2) + "0000";
+        return adcode.slice(0, 2) + "0000";
+      }
+
+      function isProvinceCode(code) {
+        return /^\d{2}0000$/.test(code);
+      }
+
+      function makeFeatureEnvelope(feature, code, name) {
+        const b = computeBounds([feature]);
+        return {
+          type: "Feature",
+          properties: { name, adcode: code },
+          geometry: {
+            type: "Polygon",
+            coordinates: [[
+              [b.minLng, b.minLat],
+              [b.maxLng, b.minLat],
+              [b.maxLng, b.maxLat],
+              [b.minLng, b.maxLat],
+              [b.minLng, b.minLat],
+            ]],
+          },
+        };
+      }
+
+      function groupBy(items, getKey) {
+        const map = new Map();
+        items.forEach((item) => {
+          const key = getKey(item);
+          if (!map.has(key)) map.set(key, []);
+          map.get(key).push(item);
+        });
+        return map;
+      }
+
+      function updateDataNote() {
+        const provinceCount = state.provinces.length;
+        const cityCount = state.cities.length;
+        const suffix = state.dataMode === "sample"
+          ? "当前使用内置示例数据；放入 DataV GeoJSON 后可显示完整市级轮廓"
+          : "支持省级总图和省内市级下钻";
+        $("dataNote").textContent = `已加载 ${provinceCount} 个省级区域、${cityCount} 个市级区域；${suffix}`;
+      }
+
+      function walkCoordinates(geometry, visit) {
+        if (!geometry) return;
+        if (geometry.type === "Polygon") {
+          geometry.coordinates.forEach((ring) => ring.forEach(([lng, lat]) => visit(lng, lat)));
+        }
+        if (geometry.type === "MultiPolygon") {
+          geometry.coordinates.forEach((polygon) => polygon.forEach((ring) => ring.forEach(([lng, lat]) => visit(lng, lat))));
+        }
+      }
+
+      function computeBounds(features) {
+        let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity;
+        features.forEach((feature) => walkCoordinates(feature.geometry, (lng, lat) => {
+          minLng = Math.min(minLng, lng);
+          maxLng = Math.max(maxLng, lng);
+          minLat = Math.min(minLat, lat);
+          maxLat = Math.max(maxLat, lat);
+        }));
+        if (!Number.isFinite(minLng)) return { minLng: 73, maxLng: 135, minLat: 18, maxLat: 54 };
+        return { minLng, maxLng, minLat, maxLat };
+      }
+
+      function project(lng, lat) {
+        const b = state.bounds;
+        const pad = VIEW_BOX.pad;
+        const usableWidth = VIEW_BOX.width - pad * 2;
+        const usableHeight = VIEW_BOX.height - pad * 2;
+        const lngRange = Math.max(b.maxLng - b.minLng, 1);
+        const latRange = Math.max(b.maxLat - b.minLat, 1);
+        const scale = Math.min(usableWidth / lngRange, usableHeight / latRange);
+        const mapWidth = lngRange * scale;
+        const mapHeight = latRange * scale;
+        const offsetX = (VIEW_BOX.width - mapWidth) / 2;
+        const offsetY = (VIEW_BOX.height - mapHeight) / 2;
+        const x = offsetX + (lng - b.minLng) * scale;
+        const y = offsetY + (b.maxLat - lat) * scale;
+        return [x, y];
+      }
+
+      function pathFromGeometry(geometry) {
+        const polygonPath = (polygon) => polygon.map((ring) => (
+          ring.map(([lng, lat], index) => {
+            const [x, y] = project(lng, lat);
+            return `${index ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`;
+          }).join(" ") + " Z"
+        )).join(" ");
+        if (geometry.type === "Polygon") return polygonPath(geometry.coordinates);
+        if (geometry.type === "MultiPolygon") return geometry.coordinates.map(polygonPath).join(" ");
+        return "";
+      }
+
+      function centroid(feature) {
+        const points = [];
+        walkCoordinates(feature.geometry, (lng, lat) => points.push(project(lng, lat)));
+        const sum = points.reduce((acc, point) => [acc[0] + point[0], acc[1] + point[1]], [0, 0]);
+        return points.length ? [sum[0] / points.length, sum[1] / points.length] : [0, 0];
+      }
+
+      function shortRegionName(name) {
+        return String(name || "")
+          .replace(/特别行政区|维吾尔自治区|壮族自治区|回族自治区|自治区|省|市|地区|盟|自治州$/g, "")
+          .replace(/哈萨克自治州$/g, "");
+      }
+
+      async function loadRecords() {
+        const records = await indexGetAll("records", "accountId", state.currentAccountId);
+        state.records = new Map(records.map((record) => [record.cityCode, record]));
+      }
+
+      function getRecord(city) {
+        return state.records.get(city.code) || {
+          accountId: state.currentAccountId,
+          cityCode: city.code,
+          cityName: city.name,
+          provinceName: city.province,
+          visited: false,
+          photoIds: [],
+          coverPhotoId: undefined,
+          note: "",
+          updatedAt: now(),
+        };
+      }
+
+      async function saveRecord(record) {
+        record.updatedAt = now();
+        await storePut("records", record);
+        const account = state.accounts.find((item) => item.id === state.currentAccountId);
+        if (account) {
+          account.updatedAt = now();
+          await storePut("accounts", account);
+        }
+        state.records.set(record.cityCode, record);
+      }
+
+      function renderAccounts() {
+        $("accountSelect").innerHTML = state.accounts.map((account) => (
+          `<option value="${account.id}" ${account.id === state.currentAccountId ? "selected" : ""}>${escapeHtml(account.nickname)}</option>`
+        )).join("");
+      }
+
+      function renderMap() {
+        if (state.selectedProvinceCode) {
+          renderProvinceMap();
+        } else {
+          renderChinaMap();
+        }
+      }
+
+      function renderChinaMap() {
+        const svg = $("mapSvg");
+        svg.innerHTML = "";
+        state.bounds = computeBounds(state.provinces.map((province) => province.feature));
+        $("mapTitle").textContent = "中国省级足迹总览";
+        $("backChinaBtn").hidden = true;
+
+        state.provinces.forEach((province) => {
+          const hasVisited = hasVisitedInProvince(province.code);
+          const path = document.createElementNS(SVG_NS, "path");
+          path.setAttribute("d", pathFromGeometry(province.feature.geometry));
+          path.setAttribute("class", `region-shape ${hasVisited ? "has-visited" : ""}`);
+          path.dataset.province = province.code;
+          path.addEventListener("click", () => enterProvince(province.code));
+          svg.appendChild(path);
+        });
+
+        state.provinces.forEach((province) => {
+          const [x, y] = centroid(province.feature);
+          const [dx, dy] = provinceLabelOffsets[province.code.slice(0, 2)] || [0, 0];
+          appendLabel(svg, x + dx, y + dy, province.shortName, "map-label province-label");
+        });
+
+        [...state.records.values()]
+          .filter((record) => record.visited)
+          .forEach((record) => {
+            const city = state.citiesByCode.get(record.cityCode);
+            if (!city) return;
+            const [x, y] = centroid(city.feature);
+            const circle = document.createElementNS(SVG_NS, "circle");
+            circle.setAttribute("cx", x.toFixed(2));
+            circle.setAttribute("cy", y.toFixed(2));
+            circle.setAttribute("r", state.selectedCityCode === city.code ? "6" : "4.5");
+            circle.setAttribute("class", "visited-dot");
+            svg.appendChild(circle);
+          });
+      }
+
+      function renderProvinceMap() {
+        const svg = $("mapSvg");
+        svg.innerHTML = "";
+        const province = state.provincesByCode.get(state.selectedProvinceCode);
+        const cities = state.citiesByProvince.get(state.selectedProvinceCode) || [];
+        state.bounds = computeBounds(cities.map((city) => city.feature));
+        $("mapTitle").textContent = province ? `${province.name}市级足迹` : "省内市级足迹";
+        $("backChinaBtn").hidden = false;
+
+        cities.forEach((city) => {
+          const record = getRecord(city);
+          const path = document.createElementNS(SVG_NS, "path");
+          path.setAttribute("d", pathFromGeometry(city.feature.geometry));
+          path.setAttribute("class", `region-shape ${record.visited ? "visited" : ""} ${state.selectedCityCode === city.code ? "selected" : ""}`);
+          path.dataset.code = city.code;
+          path.addEventListener("click", () => selectCity(city.code));
+          svg.appendChild(path);
+        });
+
+        layoutCityLabels(cities).forEach((label) => {
+          appendLabel(svg, label.x, label.y, label.text, "map-label city-label");
+        });
+      }
+
+      function layoutCityLabels(cities) {
+        const labels = cities.map((city) => {
+          const [x, y] = centroid(city.feature);
+          return { city, text: city.shortName, x, y };
+        });
+        const occupied = [];
+        const offsets = [
+          [0, 0], [0, -13], [0, 13], [18, 0], [-18, 0],
+          [18, -12], [-18, -12], [18, 12], [-18, 12],
+          [0, -26], [0, 26], [34, 0], [-34, 0],
+        ];
+        labels
+          .sort((a, b) => a.y - b.y || a.x - b.x)
+          .forEach((label) => {
+            const width = Math.max(24, label.text.length * 12);
+            const height = 15;
+            let chosen = { x: label.x, y: label.y };
+            for (const [dx, dy] of offsets) {
+              const candidate = { x: label.x + dx, y: label.y + dy };
+              const box = { x: candidate.x - width / 2, y: candidate.y - height / 2, width, height };
+              if (!occupied.some((item) => overlaps(item, box))) {
+                chosen = candidate;
+                occupied.push(box);
+                break;
+              }
+            }
+            label.x = Math.max(12, Math.min(VIEW_BOX.width - 12, chosen.x));
+            label.y = Math.max(14, Math.min(VIEW_BOX.height - 8, chosen.y));
+          });
+        return labels;
+      }
+
+      function overlaps(a, b) {
+        return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+      }
+
+      function appendLabel(svg, x, y, text, className) {
+        const label = document.createElementNS(SVG_NS, "text");
+        label.setAttribute("x", x.toFixed(2));
+        label.setAttribute("y", y.toFixed(2));
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("class", className);
+        label.textContent = text;
+        svg.appendChild(label);
+      }
+
+      function hasVisitedInProvince(provinceCode) {
+        return [...state.records.values()].some((record) => (
+          record.visited && (state.citiesByCode.get(record.cityCode)?.provinceCode === provinceCode || provinceNameToCode(record.provinceName) === provinceCode)
+        ));
+      }
+
+      function provinceNameToCode(name) {
+        const entry = Object.entries(provinceNames).find(([, value]) => value === name);
+        return entry ? `${entry[0]}0000` : "";
+      }
+
+      async function enterProvince(code) {
+        cleanupPhotoUrls();
+        state.selectedProvinceCode = code;
+        await ensureProvinceCities(code);
+        state.selectedCityCode = null;
+        await loadSelectedPhotos();
+        renderAll();
+      }
+
+      function renderStats() {
+        const visited = [...state.records.values()].filter((record) => record.visited);
+        $("visitedCount").textContent = visited.length;
+        $("provinceCount").textContent = new Set(visited.map((record) => {
+          const city = state.citiesByCode.get(record.cityCode);
+          return city?.provinceCode || provinceNameToCode(record.provinceName) || record.provinceName;
+        })).size;
+      }
+
+      function renderVisitedList() {
+        const visited = [...state.records.values()].filter((record) => record.visited)
+          .sort((a, b) => a.provinceName.localeCompare(b.provinceName, "zh-CN") || a.cityName.localeCompare(b.cityName, "zh-CN"));
+        $("visitedList").innerHTML = visited.length
+          ? visited.map((record) => `
+              <button class="city-row ${state.selectedCityCode === record.cityCode ? "active" : ""}" data-code="${record.cityCode}">
+                <span><strong>${escapeHtml(record.cityName)}</strong><br><span class="muted">${escapeHtml(record.provinceName)}</span></span>
+                <span class="badge">${record.photoIds.length} 图</span>
+              </button>
+            `).join("")
+          : `<div class="muted">还没有点亮城市。先点击中国地图上的省份，再进入省内选择城市。</div>`;
+        $("visitedList").querySelectorAll("[data-code]").forEach((button) => {
+          button.addEventListener("click", () => selectCity(button.dataset.code));
+        });
+      }
+
+      function renderSearch() {
+        const query = $("searchInput").value.trim().toLowerCase();
+        const cities = query
+          ? state.cities.filter((city) => `${city.name}${city.province}${city.code}`.toLowerCase().includes(query)).slice(0, 30)
+          : (state.selectedProvinceCode ? (state.citiesByProvince.get(state.selectedProvinceCode) || []) : state.cities.slice(0, 12));
+        const provinces = query
+          ? state.provinces.filter((province) => `${province.name}${province.code}`.toLowerCase().includes(query)).slice(0, 8)
+          : [];
+        $("searchResults").innerHTML = [
+          ...provinces.map((province) => `
+            <button class="city-pill" data-province="${province.code}">
+              <span><strong>${escapeHtml(province.name)}</strong><br><span class="muted">进入省内地图</span></span>
+              <span class="badge">省份</span>
+            </button>
+          `),
+          ...cities.map((city) => {
+            const record = getRecord(city);
+            return `
+              <button class="city-pill ${state.selectedCityCode === city.code ? "active" : ""}" data-code="${city.code}">
+                <span><strong>${escapeHtml(city.name)}</strong><br><span class="muted">${escapeHtml(city.province)}</span></span>
+                ${record.visited ? `<span class="badge">已去</span>` : ""}
+              </button>
+            `;
+          }),
+        ].join("");
+        $("searchResults").querySelectorAll("[data-code]").forEach((button) => {
+          button.addEventListener("click", () => selectCity(button.dataset.code));
+        });
+        $("searchResults").querySelectorAll("[data-province]").forEach((button) => {
+          button.addEventListener("click", () => enterProvince(button.dataset.province));
+        });
+      }
+
+      async function selectCity(code) {
+        cleanupPhotoUrls();
+        let city = state.citiesByCode.get(code);
+        if (!city) {
+          const record = state.records.get(code);
+          const provinceCode = provinceNameToCode(record?.provinceName);
+          if (provinceCode) {
+            await ensureProvinceCities(provinceCode);
+            city = state.citiesByCode.get(code);
+          }
+        }
+        if (city) {
+          state.selectedProvinceCode = city.provinceCode;
+          await ensureProvinceCities(city.provinceCode);
+        }
+        state.selectedCityCode = code;
+        await loadSelectedPhotos();
+        renderAll();
+      }
+
+      async function loadSelectedPhotos() {
+        if (!state.selectedCityCode) {
+          state.selectedPhotos = [];
+          return;
+        }
+        state.selectedPhotos = await indexGetAll("photos", "city", [state.currentAccountId, state.selectedCityCode]);
+      }
+
+      function renderDetail() {
+        const panel = $("detailPanel");
+        const city = state.citiesByCode.get(state.selectedCityCode);
+        if (!city) {
+          const province = state.provincesByCode.get(state.selectedProvinceCode);
+          panel.innerHTML = `<div class="empty-detail"><div><strong>${province ? escapeHtml(province.name) : "选择一个省份或城市"}</strong><br><span class="muted">${province ? "点击省内城市区域后，可以点亮足迹、上传照片、写备注。" : "点击中国地图上的省份进入市级地图；已点亮城市会在总图上显示圆点。"}</span></div></div>`;
+          return;
+        }
+        const record = getRecord(city);
+        const coverPhoto = state.selectedPhotos.find((photo) => photo.id === record.coverPhotoId) || state.selectedPhotos[0];
+        const coverUrl = coverPhoto ? photoUrl(coverPhoto) : "";
+        panel.innerHTML = `
+          <div class="detail-head">
+            <div>
+              <h2>${escapeHtml(city.name)}</h2>
+              <div class="muted">${escapeHtml(city.province)} · ${escapeHtml(city.code)}</div>
+            </div>
+            <button class="${record.visited ? "quiet" : "primary"}" id="toggleVisitedBtn">${record.visited ? "取消点亮" : "点亮城市"}</button>
+          </div>
+          <div class="cover">${coverUrl ? `<img src="${coverUrl}" alt="${escapeHtml(city.name)}封面">` : "还没有封面照片"}</div>
+          <div class="section-title">城市备注</div>
+          <textarea id="noteInput" placeholder="记录一次旅行、一顿饭、一个街角。">${escapeHtml(record.note || "")}</textarea>
+          <div class="toolbar">
+            <label class="file-label" for="photoFile">上传照片</label>
+            <input id="photoFile" type="file" accept="image/*" multiple />
+            <button class="quiet" id="saveNoteBtn">保存备注</button>
+          </div>
+          <div class="section-title">城市相册</div>
+          <div class="photo-grid">
+            ${state.selectedPhotos.map((photo) => {
+              const url = photoUrl(photo);
+              return `
+                <div class="photo">
+                  ${record.coverPhotoId === photo.id ? `<span class="cover-mark">封面</span>` : ""}
+                  <img src="${url}" alt="${escapeHtml(photo.fileName)}" data-view="${photo.id}">
+                  <div class="photo-actions">
+                    <button data-cover="${photo.id}">设为封面</button>
+                    <button data-delete="${photo.id}">删除</button>
+                  </div>
+                </div>
+              `;
+            }).join("") || `<div class="muted">上传几张照片，这个城市就有自己的相册了。</div>`}
+          </div>
+        `;
+        $("toggleVisitedBtn").addEventListener("click", async () => {
+          const next = { ...getRecord(city), visited: !record.visited };
+          await saveRecord(next);
+          renderAll();
+        });
+        $("saveNoteBtn").addEventListener("click", async () => {
+          const next = { ...getRecord(city), note: $("noteInput").value };
+          await saveRecord(next);
+          toast("备注已保存");
+          renderAll();
+        });
+        $("photoFile").addEventListener("change", async (event) => uploadPhotos(event.target.files, city));
+        panel.querySelectorAll("[data-cover]").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const next = { ...getRecord(city), coverPhotoId: button.dataset.cover, visited: true };
+            await saveRecord(next);
+            await loadSelectedPhotos();
+            renderAll();
+          });
+        });
+        panel.querySelectorAll("[data-delete]").forEach((button) => {
+          button.addEventListener("click", async () => deletePhoto(button.dataset.delete, city));
+        });
+        panel.querySelectorAll("[data-view]").forEach((image) => {
+          image.addEventListener("click", () => openLightbox(image.src));
+        });
+      }
+
+      async function uploadPhotos(files, city) {
+        const record = { ...getRecord(city), visited: true };
+        for (const file of files || []) {
+          if (!file.type.startsWith("image/")) continue;
+          const id = uid("photo");
+          const photo = {
+            id,
+            accountId: state.currentAccountId,
+            cityCode: city.code,
+            fileName: file.name,
+            mimeType: file.type,
+            blob: file,
+            createdAt: now(),
+          };
+          await storePut("photos", photo);
+          record.photoIds.push(id);
+          if (!record.coverPhotoId) record.coverPhotoId = id;
+        }
+        await saveRecord(record);
+        await loadSelectedPhotos();
+        toast("照片已保存到浏览器本地");
+        renderAll();
+      }
+
+      async function deletePhoto(photoId, city) {
+        if (!confirm("删除这张照片？")) return;
+        await storeDelete("photos", photoId);
+        const record = { ...getRecord(city) };
+        record.photoIds = record.photoIds.filter((id) => id !== photoId);
+        if (record.coverPhotoId === photoId) record.coverPhotoId = record.photoIds[0];
+        await saveRecord(record);
+        await loadSelectedPhotos();
+        renderAll();
+      }
+
+      function photoUrl(photo) {
+        if (!state.photoUrls.has(photo.id)) {
+          state.photoUrls.set(photo.id, URL.createObjectURL(photo.blob));
+        }
+        return state.photoUrls.get(photo.id);
+      }
+
+      function cleanupPhotoUrls() {
+        state.photoUrls.forEach((url) => URL.revokeObjectURL(url));
+        state.photoUrls.clear();
+      }
+
+      function renderAll() {
+        renderAccounts();
+        renderStats();
+        renderVisitedList();
+        renderSearch();
+        renderMap();
+        renderDetail();
+      }
+
+      async function createNewAccount() {
+        const nickname = prompt("输入新账号昵称");
+        if (!nickname) return;
+        const account = { id: uid("acct"), nickname: nickname.trim(), createdAt: now(), updatedAt: now() };
+        await storePut("accounts", account);
+        await storePut("settings", account.id, "currentAccountId");
+        state.currentAccountId = account.id;
+        state.accounts = (await storeGetAll("accounts")).sort((a, b) => b.updatedAt - a.updatedAt);
+        state.selectedCityCode = null;
+        state.selectedProvinceCode = null;
+        await loadRecords();
+        cleanupPhotoUrls();
+        renderAll();
+      }
+
+      async function switchAccount(id) {
+        state.currentAccountId = id;
+        await storePut("settings", id, "currentAccountId");
+        state.selectedCityCode = null;
+        state.selectedProvinceCode = null;
+        cleanupPhotoUrls();
+        await loadRecords();
+        renderAll();
+      }
+
+      async function deleteCurrentAccount() {
+        if (state.accounts.length <= 1) {
+          toast("至少保留一个账号");
+          return;
+        }
+        const account = state.accounts.find((item) => item.id === state.currentAccountId);
+        if (!confirm(`删除账号“${account.nickname}”及其所有城市和照片？`)) return;
+        const records = await indexGetAll("records", "accountId", state.currentAccountId);
+        const photos = await indexGetAll("photos", "accountId", state.currentAccountId);
+        await Promise.all(records.map((record) => storeDelete("records", [record.accountId, record.cityCode])));
+        await Promise.all(photos.map((photo) => storeDelete("photos", photo.id)));
+        await storeDelete("accounts", state.currentAccountId);
+        state.accounts = (await storeGetAll("accounts")).sort((a, b) => b.updatedAt - a.updatedAt);
+        state.currentAccountId = state.accounts[0].id;
+        await storePut("settings", state.currentAccountId, "currentAccountId");
+        state.selectedCityCode = null;
+        state.selectedProvinceCode = null;
+        await loadRecords();
+        renderAll();
+      }
+
+      function blobToDataUrl(blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      async function exportCurrentAccount() {
+        const account = state.accounts.find((item) => item.id === state.currentAccountId);
+        const records = await indexGetAll("records", "accountId", account.id);
+        const photos = await indexGetAll("photos", "accountId", account.id);
+        const packedPhotos = [];
+        for (const photo of photos) {
+          const { blob, ...rest } = photo;
+          packedPhotos.push({ ...rest, dataUrl: await blobToDataUrl(blob) });
+        }
+        const payload = { version: 1, exportedAt: now(), account, records, photos: packedPhotos };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = `${account.nickname}-中国足迹备份.json`;
+        anchor.click();
+        URL.revokeObjectURL(url);
+      }
+
+      async function importAccountFile(file) {
+        try {
+          const backup = JSON.parse(await file.text());
+          if (backup.version !== 1 || !backup.account || !Array.isArray(backup.records) || !Array.isArray(backup.photos)) {
+            throw new Error("格式错误");
+          }
+          const newAccountId = uid("acct");
+          const account = {
+            ...backup.account,
+            id: newAccountId,
+            nickname: `${backup.account.nickname}（导入）`,
+            createdAt: now(),
+            updatedAt: now(),
+          };
+          const photoIdMap = new Map();
+          await storePut("accounts", account);
+          for (const photo of backup.photos) {
+            const id = uid("photo");
+            photoIdMap.set(photo.id, id);
+            const blob = await (await fetch(photo.dataUrl)).blob();
+            await storePut("photos", {
+              id,
+              accountId: newAccountId,
+              cityCode: photo.cityCode,
+              fileName: photo.fileName,
+              mimeType: photo.mimeType,
+              blob,
+              createdAt: photo.createdAt,
+            });
+          }
+          for (const record of backup.records) {
+            await storePut("records", {
+              ...record,
+              accountId: newAccountId,
+              photoIds: record.photoIds.map((id) => photoIdMap.get(id)).filter(Boolean),
+              coverPhotoId: record.coverPhotoId ? photoIdMap.get(record.coverPhotoId) : undefined,
+            });
+          }
+          state.currentAccountId = newAccountId;
+          await storePut("settings", newAccountId, "currentAccountId");
+          state.accounts = (await storeGetAll("accounts")).sort((a, b) => b.updatedAt - a.updatedAt);
+          state.selectedCityCode = null;
+          state.selectedProvinceCode = null;
+          await loadRecords();
+          renderAll();
+          toast("账号备份已导入");
+        } catch (error) {
+          toast("导入失败：请确认备份文件正确");
+        }
+      }
+
+      function openLightbox(src) {
+        const box = $("lightbox");
+        box.hidden = false;
+        box.innerHTML = `<button class="quiet">关闭</button><figure><img src="${src}" alt="照片大图"></figure>`;
+        box.querySelector("button").addEventListener("click", () => {
+          box.hidden = true;
+          box.innerHTML = "";
+        });
+      }
+
+      function toast(message) {
+        const el = $("toast");
+        el.textContent = message;
+        el.hidden = false;
+        clearTimeout(toast.timer);
+        toast.timer = setTimeout(() => (el.hidden = true), 2400);
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char]);
+      }
+
+      function bindEvents() {
+        $("newAccountBtn").addEventListener("click", createNewAccount);
+        $("accountSelect").addEventListener("change", (event) => switchAccount(event.target.value));
+        $("deleteAccountBtn").addEventListener("click", deleteCurrentAccount);
+        $("exportBtn").addEventListener("click", exportCurrentAccount);
+        $("importFile").addEventListener("change", (event) => {
+          const file = event.target.files && event.target.files[0];
+          if (file) importAccountFile(file);
+          event.target.value = "";
+        });
+        $("searchInput").addEventListener("input", renderSearch);
+        $("backChinaBtn").addEventListener("click", () => {
+          state.selectedProvinceCode = null;
+          state.selectedCityCode = null;
+          cleanupPhotoUrls();
+          renderAll();
+        });
+        $("resetViewBtn").addEventListener("click", () => {
+          state.selectedCityCode = null;
+          cleanupPhotoUrls();
+          renderAll();
+        });
+      }
+
+      async function init() {
+        try {
+          state.db = await openDatabase();
+          await loadMapData();
+          await ensureAccount();
+          await loadRecords();
+          bindEvents();
+          renderAll();
+        } catch (error) {
+          document.body.innerHTML = `<div style="padding:24px;font-family:sans-serif">启动失败：${escapeHtml(error.message || error)}</div>`;
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>

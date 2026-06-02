@@ -1,0 +1,180 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "北京市", "adcode": "110100", "province": "北京市" },
+      "geometry": { "type": "Polygon", "coordinates": [[[116.05, 40.32], [116.78, 40.31], [116.92, 39.78], [116.25, 39.55], [115.82, 39.84], [116.05, 40.32]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "天津市", "adcode": "120100", "province": "天津市" },
+      "geometry": { "type": "Polygon", "coordinates": [[[117.03, 39.42], [117.78, 39.36], [117.91, 38.85], [117.25, 38.55], [116.9, 38.9], [117.03, 39.42]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "石家庄市", "adcode": "130100", "province": "河北省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[113.7, 38.35], [114.85, 38.42], [115.18, 37.72], [114.35, 37.35], [113.58, 37.72], [113.7, 38.35]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "太原市", "adcode": "140100", "province": "山西省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[111.58, 38.28], [112.75, 38.25], [113.03, 37.55], [112.18, 37.18], [111.42, 37.58], [111.58, 38.28]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "呼和浩特市", "adcode": "150100", "province": "内蒙古自治区" },
+      "geometry": { "type": "Polygon", "coordinates": [[[110.45, 41.18], [112.2, 41.25], [112.42, 40.55], [111.15, 40.18], [110.28, 40.62], [110.45, 41.18]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "沈阳市", "adcode": "210100", "province": "辽宁省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[122.72, 42.08], [123.85, 42.15], [124.12, 41.55], [123.22, 41.18], [122.55, 41.58], [122.72, 42.08]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "长春市", "adcode": "220100", "province": "吉林省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[124.78, 44.05], [126.35, 44.18], [126.58, 43.42], [125.35, 43.05], [124.52, 43.48], [124.78, 44.05]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "哈尔滨市", "adcode": "230100", "province": "黑龙江省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[125.52, 46.15], [127.25, 46.25], [127.72, 45.32], [126.42, 44.82], [125.18, 45.32], [125.52, 46.15]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "上海市", "adcode": "310100", "province": "上海市" },
+      "geometry": { "type": "Polygon", "coordinates": [[[120.92, 31.52], [121.88, 31.48], [122.02, 30.92], [121.28, 30.65], [120.78, 30.98], [120.92, 31.52]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "南京市", "adcode": "320100", "province": "江苏省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[118.18, 32.38], [119.15, 32.32], [119.35, 31.72], [118.65, 31.35], [117.92, 31.72], [118.18, 32.38]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "杭州市", "adcode": "330100", "province": "浙江省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[119.45, 30.62], [120.65, 30.55], [120.92, 29.82], [119.92, 29.42], [119.18, 29.92], [119.45, 30.62]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "合肥市", "adcode": "340100", "province": "安徽省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[116.95, 32.12], [117.95, 32.05], [118.18, 31.42], [117.32, 31.02], [116.68, 31.48], [116.95, 32.12]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "福州市", "adcode": "350100", "province": "福建省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[118.72, 26.35], [119.92, 26.28], [120.12, 25.55], [119.22, 25.12], [118.45, 25.58], [118.72, 26.35]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "南昌市", "adcode": "360100", "province": "江西省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[115.25, 28.98], [116.25, 28.95], [116.52, 28.25], [115.65, 27.9], [114.98, 28.32], [115.25, 28.98]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "济南市", "adcode": "370100", "province": "山东省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[116.42, 37.05], [117.55, 37.02], [117.82, 36.38], [116.9, 36.02], [116.18, 36.42], [116.42, 37.05]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "郑州市", "adcode": "410100", "province": "河南省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[113.05, 34.98], [114.18, 34.95], [114.4, 34.28], [113.48, 33.92], [112.85, 34.32], [113.05, 34.98]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "武汉市", "adcode": "420100", "province": "湖北省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[113.65, 30.92], [114.75, 30.88], [115.05, 30.18], [114.12, 29.8], [113.42, 30.18], [113.65, 30.92]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "长沙市", "adcode": "430100", "province": "湖南省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[112.38, 28.55], [113.38, 28.52], [113.68, 27.82], [112.78, 27.42], [112.08, 27.88], [112.38, 28.55]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "广州市", "adcode": "440100", "province": "广东省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[112.82, 23.48], [113.72, 23.45], [114.02, 22.88], [113.25, 22.52], [112.55, 22.92], [112.82, 23.48]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "深圳市", "adcode": "440300", "province": "广东省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[113.72, 22.85], [114.58, 22.82], [114.72, 22.42], [114.05, 22.18], [113.62, 22.38], [113.72, 22.85]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "南宁市", "adcode": "450100", "province": "广西壮族自治区" },
+      "geometry": { "type": "Polygon", "coordinates": [[[107.92, 23.18], [108.92, 23.12], [109.22, 22.42], [108.35, 22.05], [107.68, 22.52], [107.92, 23.18]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "海口市", "adcode": "460100", "province": "海南省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[110.02, 20.18], [110.62, 20.14], [110.72, 19.78], [110.18, 19.58], [109.88, 19.82], [110.02, 20.18]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "重庆市", "adcode": "500100", "province": "重庆市" },
+      "geometry": { "type": "Polygon", "coordinates": [[[106.05, 30.18], [107.35, 30.08], [107.72, 29.22], [106.65, 28.72], [105.72, 29.25], [106.05, 30.18]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "成都市", "adcode": "510100", "province": "四川省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[103.42, 31.02], [104.75, 30.98], [105.02, 30.12], [104.05, 29.62], [103.12, 30.15], [103.42, 31.02]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "贵阳市", "adcode": "520100", "province": "贵州省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[106.22, 26.92], [107.12, 26.9], [107.35, 26.18], [106.55, 25.82], [105.98, 26.2], [106.22, 26.92]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "昆明市", "adcode": "530100", "province": "云南省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[102.15, 25.38], [103.28, 25.32], [103.55, 24.55], [102.62, 24.12], [101.88, 24.58], [102.15, 25.38]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "拉萨市", "adcode": "540100", "province": "西藏自治区" },
+      "geometry": { "type": "Polygon", "coordinates": [[[90.72, 30.12], [92.18, 30.05], [92.48, 29.28], [91.22, 28.85], [90.45, 29.35], [90.72, 30.12]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "西安市", "adcode": "610100", "province": "陕西省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[108.35, 34.62], [109.45, 34.55], [109.72, 33.92], [108.82, 33.52], [108.08, 33.92], [108.35, 34.62]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "兰州市", "adcode": "620100", "province": "甘肃省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[102.95, 36.38], [104.18, 36.32], [104.45, 35.72], [103.55, 35.32], [102.75, 35.78], [102.95, 36.38]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "西宁市", "adcode": "630100", "province": "青海省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[100.92, 36.92], [102.05, 36.88], [102.32, 36.22], [101.42, 35.82], [100.68, 36.22], [100.92, 36.92]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "银川市", "adcode": "640100", "province": "宁夏回族自治区" },
+      "geometry": { "type": "Polygon", "coordinates": [[[105.65, 38.82], [106.65, 38.78], [106.92, 38.12], [106.08, 37.78], [105.42, 38.18], [105.65, 38.82]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "乌鲁木齐市", "adcode": "650100", "province": "新疆维吾尔自治区" },
+      "geometry": { "type": "Polygon", "coordinates": [[[86.92, 44.12], [88.25, 44.08], [88.58, 43.25], [87.42, 42.82], [86.62, 43.28], [86.92, 44.12]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "台北市", "adcode": "710100", "province": "台湾省" },
+      "geometry": { "type": "Polygon", "coordinates": [[[121.18, 25.32], [121.78, 25.28], [121.92, 24.92], [121.35, 24.68], [121.05, 24.92], [121.18, 25.32]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "香港特别行政区", "adcode": "810000", "province": "香港特别行政区" },
+      "geometry": { "type": "Polygon", "coordinates": [[[113.88, 22.48], [114.35, 22.46], [114.42, 22.18], [114.08, 21.98], [113.82, 22.18], [113.88, 22.48]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "澳门特别行政区", "adcode": "820000", "province": "澳门特别行政区" },
+      "geometry": { "type": "Polygon", "coordinates": [[[113.45, 22.28], [113.72, 22.26], [113.75, 22.08], [113.52, 21.96], [113.38, 22.1], [113.45, 22.28]]] }
+    }
+  ]
+}
